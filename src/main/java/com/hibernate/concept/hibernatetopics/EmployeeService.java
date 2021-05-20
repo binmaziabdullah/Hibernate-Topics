@@ -1,10 +1,10 @@
 package com.hibernate.concept.hibernatetopics;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -12,12 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmployeeService {
 
     @Autowired
-    private SessionFactory sessionFactory;
+    private EmployeeRepository employeeRepository;
 
+    public Employee addEmployee(Employee employee){
+        return employeeRepository.save(employee);
+    }
     public Employee getEmployee(Long id){
-        Session session = sessionFactory.openSession();
-        Employee employee = session.get(Employee.class, id);
+        Employee  employee = new Employee();
+        employeeRepository.findById(employee.getId());
         return employee;
+    }
+
+    public List<Employee> getAllEmployee(){
+        return employeeRepository.findAll();
     }
 
 }
