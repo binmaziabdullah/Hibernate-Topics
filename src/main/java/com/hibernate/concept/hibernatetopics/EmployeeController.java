@@ -14,7 +14,7 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @GetMapping("/{id}")
-    public Employee getEmployee(@PathVariable Long id){
+    public Employee getEmployee(@PathVariable Long id) throws InterruptedException{
         return employeeService.getEmployee(id);
     }
 

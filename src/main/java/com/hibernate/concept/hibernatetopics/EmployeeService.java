@@ -14,10 +14,18 @@ public class EmployeeService {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public Employee getEmployee(Long id){
+    public Employee getEmployee(Long id) throws InterruptedException{
         Session session = sessionFactory.openSession();
-        Employee employee = session.get(Employee.class, id);
-        return employee;
+        Employee employee1 = session.get(Employee.class, id);
+        System.out.println(employee1);
+        Employee employee2 = session.get(Employee.class, id);
+        System.out.println(employee2);
+        Employee employee3 = session.get(Employee.class, id);
+        System.out.println(employee3);
+        Boolean contains = session.contains(employee2);
+        System.out.println(contains);
+        session.close();
+        return employee1;
     }
 
 }
