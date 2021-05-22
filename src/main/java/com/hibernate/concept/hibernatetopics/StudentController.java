@@ -14,13 +14,14 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @PostMapping
-    public Integer addStudent(@RequestBody Student student){
-        return studentService.addStudent(student);
+    @PostMapping("/{id}")
+    public String addStudent(@PathVariable Long id){
+        studentService.addStudent(id);
+        return "added";
     }
 
     @GetMapping
-    public List<Student> getStudent(){
+    public List<Student> getAllStudent(){
         return studentService.getAllStudent();
     }
 

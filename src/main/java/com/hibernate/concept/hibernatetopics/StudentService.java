@@ -1,12 +1,11 @@
 package com.hibernate.concept.hibernatetopics;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 
@@ -14,54 +13,62 @@ import java.util.List;
 @Transactional
 public class StudentService {
 
-    @PersistenceContext
-    private final EntityManager entityManager;
+    private final SessionFactory sessionFactory;
 
-    public StudentService(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public StudentService(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
 
-    public Integer addStudent(Student student){
-        Session session = entityManager.unwrap(Session.class);
-        String sql = "insert into Student(name,rollNo, marks) value(:name,:rollNo,:marks)";
-        Query<Student> query = session.createQuery(sql);
-        query.setParameter("name", student.getName());
-        query.setParameter("rollNo", student.getRollNo());
-        query.setParameter("marks", student.getMarks());
-        return query.executeUpdate();
+    public Integer addStudent(Long id){
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        String sql = "insert into Student(name,rollNo, marks) select name, rollNo, marks from StudentBackup where id= :id";
+        Query <Student> query = session.createQuery(sql);
+        query.setParameter("id", id);
+        int i =  query.executeUpdate();
+        session.getTransaction().commit();
+        return i;
     }
+
 
     public Student getStudent(Long id){
-        Session session =  entityManager.unwrap(Session.class);
-        Query query = session.createQuery("from Student s where s.id = :id");
+        Session session =  sessionFactory.openSession();
+        Query<Student> query = session.createQuery("from Student s where s.id = :id");
         query.setParameter("id", id);
         Student student = (Student) query.uniqueResult();
         return student;
     }
 
     public List<Student> getAllStudent(){
-        Session session =  entityManager.unwrap(Session.class);
-        Query query = session.createQuery("from Student");
+        Session session =  sessionFactory.openSession();
+        Query<Student> query = session.createQuery("from Student");
         List<Student>  students = query.list();
         return students;
     }
 
     public Integer updateStudent(Student student){
-        Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("update Student s set name = :name, rollNo = :rollNo, marks = :marks" +
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Query<Student> query = session.createQuery("update Student s set name = :name, rollNo = :rollNo, marks = :marks" +
                 " where s.id = :id");
         query.setParameter("id", student.getId());
         query.setParameter("name", student.getName());
         query.setParameter("rollNo", student.getRollNo());
         query.setParameter("marks", student.getMarks());
-        return query.executeUpdate();
+
+        int i = query.executeUpdate();
+        session.getTransaction().commit();
+        return i;
     }
 
     public Integer deleteStudent(Long id){
-        Session session = entityManager.unwrap(Session.class);
-        Query query = session.createQuery("delete from Student where id= :id");
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Query<Student> query = session.createQuery("delete from Student where id= :id");
         query.setParameter("id", id);
-        return query.executeUpdate();
+        int i =  query.executeUpdate();
+        session.getTransaction().commit();
+        return i;
     }
 }
